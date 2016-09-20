@@ -58,67 +58,15 @@
     "AWSRegionArch2AMI" : {
       "us-east-1"      : { "PV64" : "ami-7c807d14", "HVM64" : "ami-76817c1e", "HVMG2" : "ami-9c13ecf4",  "HVMGPU" : "ami-c6867bae"  },
       "us-west-2"      : { "PV64" : "ami-1b3b462b", "HVM64" : "ami-d13845e1", "HVMG2" : "ami-6d8cf15d",  "HVMGPU" : "NOT_SUPPORTED" },
-      "us
--west-
-1"      : { "PV64" : "ami
--a8d3d4ed", "HVM64" : "ami-
-f0d3d4b5", "HVMG2" : "ami-
-84494fc1",  "HVMGPU" 
-: "NOT_SUPPORTED" },
-      "eu
--west-
-1"      : { "PV64" : "ami
--672ce210", "HVM64" : "ami-
-892fe1fe", "HVMG2" : "ami-
-1138f166",  "HVMGPU" 
-Bootstrapping Applications via AWS CloudFormation 
-19
-: "ami-
-972fe1e0"  },
-      "ap
--southeast-
-1" : { "PV64" : "ami
--56b7eb04", "HVM64" : "ami-
-a6b6eaf4", "HVMG2" : "ami-
-7a1a4528",  "HVMGPU" 
-: "NOT_SUPPORTED" },
-      "ap
--northeast-
-1" : { "PV64" : "ami
--25dd932
-4", "HVM64" : "ami-
-29dc9228", "HVMG2" : "ami-
-4d3b734c",  "HVMGPU" 
-: "NOT_SUPPORTED" },
-      "ap
--southeast-
-2" : { "PV64" : "ami
--6bf99c51", "HVM64" : "ami-
-d9fe9be3", "HVMG2" : "ami-
-010c683b",  "HVMGPU" 
-: "NOT_SUPPORTED" },
-      "sa
--east-
-1"      : { "PV64" 
-: "ami
--c7e649da", "HVM64" : "ami-
-c9e649d4", "HVMG2" : "NOT_SUPPORTED", "HVMGPU" 
-: "NOT_SUPPORTED" },
-      "us
--gov-west  -1"  : { "PV64" : "ami
--ab4a2d88", "HVM64" : "ami-
-a54a2d86", "HVMG2" : "NOT_SUPPORTED", "HVMGPU" 
-: "NOT_SUPPORTED" },
-      "cn
--north-
-1"     
-: { "PV64" : "ami
--cab82af3", "HVM64" : "ami-
-ccb82af5", "HVMG2" : "NOT_SUPPORTED", "HVMGPU" 
-: "NOT_SUPPORTED" }
+      "us-west-1"      : { "PV64" : "ami-a8d3d4ed", "HVM64" : "ami-f0d3d4b5", "HVMG2" : "ami-84494fc1",  "HVMGPU" : "NOT_SUPPORTED" },
+      "eu-west-1"      : { "PV64" : "ami-672ce210", "HVM64" : "ami-892fe1fe", "HVMG2" : "ami-1138f166",  "HVMGPU" : "ami-972fe1e0"  },      
+      "ap-southeast-1" : { "PV64" : "ami-56b7eb04", "HVM64" : "ami-a6b6eaf4", "HVMG2" : "ami-7a1a4528",  "HVMGPU" : "NOT_SUPPORTED" },
+      "ap-northeast-1" : { "PV64" : "ami-25dd9324", "HVM64" : "ami-29dc9228", "HVMG2" : "ami-4d3b734c",  "HVMGPU" : "NOT_SUPPORTED" },
+      "ap-southeast-2" : { "PV64" : "ami-6bf99c51", "HVM64" : "ami-d9fe9be3", "HVMG2" : "ami-010c683b",  "HVMGPU" : "NOT_SUPPORTED" },
+      "sa-east-1"      : { "PV64" : "ami-c7e649da", "HVM64" : "ami-c9e649d4", "HVMG2" : "NOT_SUPPORTED", "HVMGPU" : "NOT_SUPPORTED" },
+      "us-gov-west-1"  : { "PV64" : "ami-ab4a2d88", "HVM64" : "ami-a54a2d86", "HVMG2" : "NOT_SUPPORTED", "HVMGPU" : "NOT_SUPPORTED" },
+      "cn-north-1"     : { "PV64" : "ami-cab82af3", "HVM64" : "ami-ccb82af5", "HVMG2" : "NOT_SUPPORTED", "HVMGPU" : "NOT_SUPPORTED" }
     } 
-  },   
-  
   },
   "Resources" : {  
     "CFNInitUser" : {
