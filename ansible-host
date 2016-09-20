@@ -1,0 +1,126 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Sample template to bring up Puppet Master instance that can be used to bootstrap and manage Puppet Clients. The Puppet Master is populated from an embedded template that defines the set of applications to load. **WARNING** This template creates one or more Amazon EC2 instances. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Parameters" : {
+    "InstanceType" : {
+      "Description" : "EC2 instance type for PuppetMaster",
+      "Type" : "String",
+      "Default" : "t1.micro",
+      "AllowedValues" : [ "t1.micro", "m1.small", "m1.large", "m1.xlarge", "m2.xlarge", "m2.2xlarge", "m2.4xlarge", "c1.medium", "c1.xlarge", "cc1.4xlarge" ],
+      "ConstraintDescription" : "must contain only alphanumeric characters."
+    },
+    "KeyName" : {
+      "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the PuppetMaster",
+      "Type" : "String"
+    },    
+"Mappings" : {
+"AWSInstanceType2Arch" : {
+"t1.micro"    : { "Arch" : "32" },
+"m1.small"    : { "Arch" : "32" },
+"m1.large"    : { "Arch" : "64" },
+"m1.xlarge"   : { "Arch" : "64" },
+"m2.xlarge"   : { "Arch" : "64" },
+"m2.2xlarge"  : { "Arch" : "64" },
+"m2.4xlarge"  : { "Arch" : "64" },
+"c1.medium"   : { "Arch" : "32" },
+"c1.
+xlarge"   : { "Arch" : "64" },
+"cc1.4xlarge" : { "Arch" : "64" }
+},
+"AWSRegionArch2AMI" : {
+"us
+-
+east
+-
+1"      : { "32" : "ami
+-
+7f418316", "64" : "ami
+-
+7341831a" },
+"us
+-
+west
+-
+1"      : { "32" : "ami
+-
+951945d0", "64" : "ami
+-
+971945d2" },
+"eu
+-
+west
+-
+1"      : { "32" : "ami
+-
+24506250", "64" : "ami
+-
+20506254" },
+"ap
+-
+southeast
+-
+1" : { "32" : "ami
+-
+74dda626", "64" : "ami
+-
+7edda62c" },
+"ap
+-
+northeast
+-
+1" : { "32" : "ami
+-
+dcfa4edd", "64" : "ami
+-
+e8fa4ee9" }
+}
+},
+"Resources" : 
+{  
+"CFNInitUser" : {
+"Type" : "AWS::IAM::User",
+"Properties" : {
+"Policies": [{
+"PolicyName": "AccessForCFNInit",
+"PolicyDocument" : {
+"Statement": [{
+"Effect"   : "Allow",
+"Action"   : "cloudformation:DescribeStackResource",
+"Resource" : "*"
+}]
+}
+}]
+}
+},
+"CFNKeys" : {
+"Type" : "AWS::IAM::AccessKey",
+"Properties" : {
+"UserName" : { "Ref": "CFNInitUser" }
+}
+},
+"PuppetMasterInstance" : {
+"Type" : "AWS::EC2::Instance",
+"Metadata" : {
+"AWS::CloudFormation::Init" : {
+"config" : {
+"packages" : {
+"
+yum" : {
+"puppet"        : [],
+"puppet
+-
+server" : [],
+"ruby
+-
+devel"    : [],
+"gcc"           : [],
+"make"          : [],
+"rubygems"      : []
+},
+"rubygems" : {
+"json"          : []
+}
+},
+"sources" : {
+"/etc/puppet" : { "Ref" : "ContentLocation" }
+  
