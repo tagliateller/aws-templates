@@ -89,7 +89,7 @@
         "GroupDescription" : "Group for clients to communicate with Docker Host"
       }
     },
-    "Docker Group" : {
+    "DockerGroup" : {
       "Type" : "AWS::EC2::SecurityGroup",
       "Properties" : {
         "GroupDescription" : "Group for Docker communication",
