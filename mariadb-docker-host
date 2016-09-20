@@ -79,8 +79,11 @@
         "KeyName" : { "Ref" : "KeyName" },
         "UserData" : { "Fn::Base64" : { "Fn::Join" : ["", [
           "#!/bin/bash\n",
-          "sudo yum -y update\n",
-          "sudo yum -y install mariadb\n"]]}
+          "yum -y update\n",
+          "yum -y install mariadb-server mariadb mariadb-devel mariadb-lib git\n"
+          "systemctl start mariadb\n"
+          "systemctl enable mariadb\n"
+          ]]}
         }
       }
     },
