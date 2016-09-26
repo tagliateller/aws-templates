@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
   
-  "Description" : "AWS CloudFormation Sample Template LAMP_Single_Instance: Create a LAMP stack using a single EC2 instance and a local MySQL database for storage. This template demonstrates using the AWS CloudFormation bootstrap scripts to install the packages and files necessary to deploy the Apache web server, PHP and MySQL at instance launch time. **WARNING** This template creates an Amazon EC2 instance. You will be billed for the AWS resources used if you create a stack from this template.",
+  "Description" : "Ansible and OpenShift Origin Host Template",
   
   "Parameters" : {
       
@@ -203,7 +203,7 @@
     
   "Resources" : {     
       
-    "WebServerInstance": {  
+    "AnsibleHostInstance": {  
       "Type": "AWS::EC2::Instance",
       "Metadata" : {
         "AWS::CloudFormation::Init" : {
@@ -214,12 +214,15 @@
           "Install" : {
             "packages" : {
               "yum" : {
-                "mysql"        : [],
-                "mysql-server" : [],
-                "mysql-libs"   : [],
-                "httpd"        : [],
-                "php"          : [],
-                "php-mysql"    : []
+                "wget"        : [],
+                "git" : [],
+                "net-tools"   : [],
+                "bind-utils"        : [],
+                "iptables-services"         : [],
+                "bridge-utils"    : [],
+                "bash-completion" : [],
+                "httpd-tools" : [],
+                "pyOpenSSL" : []
               }
             },
 
@@ -313,10 +316,10 @@
                 "content": { "Fn::Join" : ["", [
                   "[cfn-auto-reloader-hook]\n",
                   "triggers=post.update\n",
-                  "path=Resources.WebServerInstance.Metadata.AWS::CloudFormation::Init\n",
+                  "path=Resources.AnsibleHostInstance.Metadata.AWS::CloudFormation::Init\n",
                   "action=/opt/aws/bin/cfn-init -v ",
                   "         --stack ", { "Ref" : "AWS::StackName" },
-                  "         --resource WebServerInstance ",
+                  "         --resource AnsibleHostInstance ",
                   "         --configsets InstallAndRun ",
                   "         --region ", { "Ref" : "AWS::Region" }, "\n",
                   "runas=root\n"
@@ -326,8 +329,6 @@
 
             "services" : {
               "sysvinit" : {  
-                "mysqld"  : { "enabled" : "true", "ensureRunning" : "true" },
-                "httpd"   : { "enabled" : "true", "ensureRunning" : "true" },
                 "cfn-hup" : { "enabled" : "true", "ensureRunning" : "true",
                               "files" : ["/etc/cfn/cfn-hup.conf", "/etc/cfn/hooks.d/cfn-auto-reloader.conf"]}
               }
@@ -336,15 +337,13 @@
 
           "Configure" : {
             "commands" : {
-              "01_set_mysql_root_password" : {
-                "command" : { "Fn::Join" : ["", ["mysqladmin -u root password '", { "Ref" : "DBRootPassword" }, "'"]]},
-                "test" : { "Fn::Join" : ["", ["$(mysql ", { "Ref" : "DBName" }, " -u root --password='", { "Ref" : "DBRootPassword" }, "' >/dev/null 2>&1 </dev/null); (( $? != 0 ))"]]}
+              "01_git_clone" : {
+                "command" : { "Fn::Join" : ["", ["git clone https://github.com/openshift/openshift-ansible /opt/openshift-ansibled"]]}
               },
-              "02_create_database" : {
-                "command" : { "Fn::Join" : ["", ["mysql -u root --password='", { "Ref" : "DBRootPassword" }, "' < /tmp/setup.mysql"]]},
-                "test" : { "Fn::Join" : ["", ["$(mysql ", { "Ref" : "DBName" }, " -u root --password='", { "Ref" : "DBRootPassword" }, "' >/dev/null 2>&1 </dev/null); (( $? != 0 ))"]]}
-              }
-            }
+              "02_install_ansible" : {
+                "command" : { "Fn::Join" : ["", ["yum -y --enablerepo=epel ansible"]]}
+              }              
+            } 
           }
         }
       },
@@ -352,7 +351,7 @@
         "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
                           { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
         "InstanceType"   : { "Ref" : "InstanceType" },
-        "SecurityGroups" : [ {"Ref" : "WebServerSecurityGroup"} ],
+        "SecurityGroups" : [ {"Ref" : "AnsibleHostSecurityGroup"} ],
         "KeyName"        : { "Ref" : "KeyName" },
         "UserData"       : { "Fn::Base64" : { "Fn::Join" : ["", [
              "#!/bin/bash -xe\n",
@@ -361,14 +360,14 @@
              "# Install the files and packages from the metadata\n",
              "/opt/aws/bin/cfn-init -v ",
              "         --stack ", { "Ref" : "AWS::StackName" },
-             "         --resource WebServerInstance ",
+             "         --resource AnsibleHostInstance ",
              "         --configsets InstallAndRun ",
              "         --region ", { "Ref" : "AWS::Region" }, "\n",
 
              "# Signal the status from cfn-init\n",
              "/opt/aws/bin/cfn-signal -e $? ",
              "         --stack ", { "Ref" : "AWS::StackName" },
-             "         --resource WebServerInstance ",
+             "         --resource AnsibleHostInstance ",
              "         --region ", { "Ref" : "AWS::Region" }, "\n"
         ]]}}        
       },
@@ -379,22 +378,14 @@
       }
     },
     
-    "WebServerSecurityGroup" : {
+    "AnsibleHostSecurityGroup" : {
       "Type" : "AWS::EC2::SecurityGroup",
       "Properties" : {
         "GroupDescription" : "Enable HTTP access via port 80",
         "SecurityGroupIngress" : [
-          {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0"},
           {"IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : { "Ref" : "SSHLocation"}}
         ]
       }      
     }          
-  },
-  
-  "Outputs" : {
-    "WebsiteURL" : {
-      "Description" : "URL for newly created LAMP stack",
-      "Value" : { "Fn::Join" : ["", ["http://", { "Fn::GetAtt" : [ "WebServerInstance", "PublicDnsName" ]}]] }
-    }
   }
 }
