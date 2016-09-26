@@ -203,6 +203,11 @@
     
   "Resources" : {     
       
+    "MasterInstance": {
+    },
+    "Node1Instance": {
+    }
+    
     "AnsibleHostInstance": {  
       "Type": "AWS::EC2::Instance",
       "Metadata" : {
