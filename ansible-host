@@ -276,18 +276,19 @@
                   "masters\n",
                   "nodes\n",
                   "[OSEv3:vars]\n"
-                  "ansible_ssh_user=${USERNAME}\n"
+                  "ansible_ssh_user=", {"Ref" : "AnsibleSshUser" }, "\n"
                   "ansible_sudo=true\n"
                   "debug_level=2\n"
                   "deployment_type=origin\n"
                   "openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]\n"
-                  "openshift_master_default_subdomain=${ROUTEREXTIP}.xip.io\n" 
+                  "openshift_master_default_subdomain=", {"Ref" : "RouterExtIp" }, ".xip.io\n" 
                   "openshift_use_dnsmasq=False\n"
                   "[masters]\n"
-                  "master openshift_public_hostname=${HOSTNAME}\n"
+                  "master openshift_public_hostname=", { "Fn:GetAtt", ["MasterInstance", "PublicDnsName"] }, "\n"
                   "[nodes]\n"
                   "master\n"
-                  "node[01:${NODECOUNT}] openshift_node_labels=\"{'region': 'primary', 'zone': 'default'}\"\n"
+                  "node01 openshift_public_hostname=", { "Fn:GetAtt", ["Node1Instance", "PublicDnsName"] }, " openshift_node_labels=\"{'region': 'primary', 'zone': 'default'}\"\n"
+                  "node02 openshift_public_hostname=", { "Fn:GetAtt", ["Node2Instance", "PublicDnsName"] }, " openshift_node_labels=\"{'region': 'primary', 'zone': 'default'}\"\n"
                   "infranode openshift_node_labels=\"{'region': 'infra', 'zone': 'default'}\"\n"
                 ]]},
                 "mode"  : "000600",
