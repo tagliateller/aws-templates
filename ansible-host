@@ -251,7 +251,7 @@
       "Metadata" : {
         "AWS::CloudFormation::Init" : {
           "configSets" : {
-            "InstallAndRun" : [ "Install", "Configure" ]
+            "InstallAndRun" : [ "Install" ]
           },
 
           "Install" : {
@@ -270,6 +270,31 @@
             },
 
             "files" : {
+              "/etc/ansible/hosts": {
+                "content": { "Fn::Join" : [ "", [
+                  "[OSEv3:children]\n",
+                  "masters\n",
+                  "nodes\n",
+                  "[OSEv3:vars]\n"
+                  "ansible_ssh_user=${USERNAME}\n"
+                  "ansible_sudo=true\n"
+                  "debug_level=2\n"
+                  "deployment_type=origin\n"
+                  "openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]\n"
+                  "openshift_master_default_subdomain=${ROUTEREXTIP}.xip.io\n" 
+                  "openshift_use_dnsmasq=False\n"
+                  "[masters]\n"
+                  "master openshift_public_hostname=${HOSTNAME}\n"
+                  "[nodes]\n"
+                  "master\n"
+                  "node[01:${NODECOUNT}] openshift_node_labels=\"{'region': 'primary', 'zone': 'default'}\"\n"
+                  "infranode openshift_node_labels=\"{'region': 'infra', 'zone': 'default'}\"\n"
+                ]]},
+                "mode"  : "000600",
+                "owner" : "apache",
+                "group" : "apache"
+              },
+
               "/var/www/html/index.php" : {
                 "content" : { "Fn::Join" : [ "", [
                   "<html>\n",
@@ -416,7 +441,7 @@
       },
       "CreationPolicy" : {
         "ResourceSignal" : {
-          "Timeout" : "PT5M"
+          "Timeout" : "PT10M"
         }
       }
     },
