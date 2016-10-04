@@ -11,6 +11,12 @@
       "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
     },    
 
+    "AnsibleSshUser": {
+      "Description": "Name des Ansible SSH Users",
+      "Type": "String"
+    },
+    
+    
     "DBName": {
       "Default": "MyDatabase",
       "Description" : "MySQL database name",
